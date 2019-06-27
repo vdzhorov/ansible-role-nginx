@@ -99,7 +99,7 @@ server {
         fastcgi_index index.php;
         fastcgi_param PATH_INFO       $fastcgi_path_info;
         fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
-        fastcgi_pass unix:{{ socket_location }}/{{ item.domain }}.sock;
+        fastcgi_pass unix:{{ php_fpm_socket_location }}/{{ item.domain }}.sock;
         }
             try_files $uri $uri/ =404;
             expires 30d;
@@ -125,7 +125,7 @@ server {
         fastcgi_index index.php;
         fastcgi_param PATH_INFO       $fastcgi_path_info;
         fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
-        fastcgi_pass unix:{{ socket_location }}/{{ item.domain }}.sock;
+        fastcgi_pass unix:{{ php_fpm_socket_location }}/{{ item.domain }}.sock;
         }
  
 

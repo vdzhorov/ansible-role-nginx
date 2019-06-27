@@ -153,7 +153,7 @@ server {
     set $path_info $fastcgi_path_info;
     fastcgi_param PATH_INFO $path_info;
 
-    fastcgi_pass unix:{{ socket_location }}/{{ item.domain }}.sock;
+    fastcgi_pass unix:{{ php_fpm_socket_location }}/{{ item.domain }}.sock;
     fastcgi_index index.php;
     {% if item.ssl_enabled %}fastcgi_param HTTPS on;{% endif %}
     include fastcgi_params;

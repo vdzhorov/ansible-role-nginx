@@ -37,7 +37,7 @@ server {
     include {{ fastcgi_params_location }};
     try_files $uri =404;
 
-    fastcgi_pass unix:{{ socket_location }}/{{ item.domain }}.sock;
+    fastcgi_pass unix:{{ php_fpm_socket_location }}/{{ item.domain }}.sock;
   }
   location = /favicon.ico {
 

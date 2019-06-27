@@ -1,10 +1,9 @@
 ---
 
 dependencies:
-  - role: 'ramdisk'
+  - role: 'ansible-role-create-ramdisk'
     when: fastcgi_cache_enabled
-  - role: 'php'
-  - role: 'php-fpm-configure'
+  - role: 'ansible-role-php'
 
 galaxy_info:
   author: vdzhorov

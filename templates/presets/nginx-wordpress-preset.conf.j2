@@ -50,7 +50,7 @@ server {
           #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
           include {{ fastcgi_params_location }};
           fastcgi_intercept_errors on;
-          fastcgi_pass unix:{{ socket_location }}/{{ item.domain }}.sock;
+          fastcgi_pass unix:{{ php_fpm_socket_location }}/{{ item.domain }}.sock;
   }
 
   location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
