@@ -2,7 +2,7 @@
 
 dependencies:
   - role: 'ansible-role-create-ramdisk'
-    when: fastcgi_cache_enabled
+    when: fastcgi_cache_enabled|bool
   - role: 'ansible-role-php'
 
 galaxy_info:
