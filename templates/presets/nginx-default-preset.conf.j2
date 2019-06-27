@@ -1,25 +1,29 @@
 {% if item.ssl_enabled %}server {
+
   listen 80;
   server_name {{ item.domain }} www.{{ item.domain }};
   return 301 https://{{ item.domain }}$request_uri;
 }
 server {
+
   listen 443;
   server_name www.{{ item.domain }};
   return 301 https://{{ item.domain }}$request_uri;
-}{% endif %}
+}
+{% endif %}
 server {
+
   {% if item.ssl_enabled %}listen 443;
   {% else %}listen 80;
   {% endif %}
-  server_name {{ item.domain }};
-  {% if item.ssl_enabled %}include includes/ssl.conf;
+server_name {{ item.domain }};
+{% if item.ssl_enabled %}include includes/ssl.conf;
   {% endif %}
-  {% if item.gzip_enabled %}include includes/gzip.conf;
+{% if item.gzip_enabled %}include includes/gzip.conf;
   {% endif %}
-  {% if item.expires_enabled %}include includes/expires.conf;
+{% if item.expires_enabled %}include includes/expires.conf;
   {% endif %}
-  {% if item.security_headers_enabled %}include includes/headers.conf;
+{% if item.security_headers_enabled %}include includes/headers.conf;
   {% endif %}
   access_log {{ nginx_log_path }}/{{ item.domain }}_access_log;
   error_log {{ nginx_log_path }}/{{ item.domain }}_error_log;

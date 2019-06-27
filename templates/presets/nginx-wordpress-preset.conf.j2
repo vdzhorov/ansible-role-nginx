@@ -1,14 +1,18 @@
 {% if item.ssl_enabled %}server {
+
   listen 80;
   server_name {{ item.domain }} www.{{ item.domain }};
   return 301 https://{{ item.domain }}$request_uri;
 }
-  server {
+server {
+
   listen 443;
   server_name www.{{ item.domain }};
   return 301 https://{{ item.domain }}$request_uri;
-}{% endif %}
+}
+{% endif %}
 server {
+
   {% if item.ssl_enabled %}listen 443;
   {% else %}listen 80;
   {% endif %}
