@@ -1,0 +1,16 @@
+	# SSL
+	ssl_session_timeout 10m;
+	ssl_session_cache shared:SSL:10m;	
+	ssl_session_tickets off;
+	ssl_dhparam {{ dhparam_location }};
+	# modern configuration
+	ssl_protocols TLSv1.2;
+	ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
+	ssl_ecdh_curve secp384r1;
+	ssl_prefer_server_ciphers on;
+
+	# OCSP Stapling
+	ssl_stapling on;
+	ssl_stapling_verify on;
+	resolver 1.1.1.1 1.0.0.1 8.8.8.8 8.8.4.4 208.67.222.222 208.67.220.220 valid=60s;
+	resolver_timeout 2s;

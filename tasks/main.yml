@@ -1,0 +1,70 @@
+---
+
+- include: 'hooks/pre_centos.yml'
+  when: ansible_distribution == 'CentOS'
+
+- name: Create sites-enabled and sites-available direcotries
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - '/etc/nginx/sites-enabled'
+    - '/etc/nginx/sites-available'
+
+- name: Configure main nginx.conf
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    mode: 0644
+  notify: 'Restart Nginx'
+
+- name: Configure fastcgi_params
+  template:
+    src: fastcgi_params.j2
+    dest: "{{ fastcgi_params_location }}"
+    mode: 0644
+  notify: 'Restart Nginx'
+
+- name: Create includes directory
+  file:
+    path: '/etc/nginx/includes'
+    state: directory
+    mode: 0755
+
+- name: Create log dir
+  file:
+    path: "{{ nginx_log_path }}"
+    state: directory
+    mode: 0755
+
+- name: Set configuration in includes/ dir
+  template:
+    src: "includes/{{ item }}.j2"
+    dest: "/etc/nginx/includes/{{ item }}"
+    mode: 0644
+  loop:
+    - 'ssl.conf'
+    - 'gzip.conf'
+    - 'expires.conf'
+    - 'headers.conf'
+  notify: 'Restart Nginx'
+
+- name: Configure sites in separate config files
+  template:
+    src: 'presets/nginx-{{ item.preset }}-preset.conf.j2'
+    dest: "/etc/nginx/sites-available/{{ item.domain }}.conf"
+    mode: 0644
+  loop: "{{ websites }}"
+  notify: 'Restart Nginx'
+
+- name: Enable the sites by linking them in sites-enabled
+  file:
+    src: "/etc/nginx/sites-available/{{ item.domain }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ item.domain }}.conf"
+    state: link
+  loop: "{{ websites }}"
+  notify: 'Restart Nginx'
+
+# Generate dhparam
+- include: hooks/dhparam.yml

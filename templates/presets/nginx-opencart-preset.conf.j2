@@ -1,0 +1,162 @@
+{% if item.ssl_enabled %}server {
+  listen 80;
+  server_name {{ item.domain }} www.{{ item.domain }};
+  return 301 https://{{ item.domain }}$request_uri;
+}
+  server {
+  listen 443;
+  server_name www.{{ item.domain }};
+  return 301 https://{{ item.domain }}$request_uri;
+}{% endif %}
+server {
+  {% if item.ssl_enabled %}listen 443;
+  {% else %}listen 80;
+  {% endif %}
+  server_name {{ item.domain }};
+  {% if item.ssl_enabled %}include includes/ssl.conf;
+  {% endif %}
+  {% if item.gzip_enabled %}include includes/gzip.conf;
+  {% endif %}
+  {% if item.expires_enabled %}include includes/expires.conf;
+  {% endif %}
+  {% if item.security_headers_enabled %}include includes/headers.conf;
+  {% endif %}
+  {% if item.ssl_enabled %}ssl_certificate {{ item.ssl_crt_path }};
+  ssl_certificate_key {{ item.ssl_key_path }};{% endif %}
+
+  root /home/{{ item.user }}/public_html/;
+  index index.php index.html index.htm;
+  charset UTF-8;
+  autoindex off;
+
+  # Show "Not Found" 404 errors in place of "Forbidden" 403 errors, because
+  # forbidden errors allow attackers potential insight into your server's
+  # layout and contents
+  error_page 403 =404;
+
+  # It's always good to set logs, note however you cannot turn off the error log
+  # Setting error_log off; will simply create a file called 'off'
+  access_log {{ nginx_log_path }}/{{ item.domain }}.access.log;
+  error_log {{ nginx_log_path }}/{{ item.domain }}.error.log;
+
+  #if (!-d $request_filename) {
+  #      rewrite ^/(.*)/$ /$1 permanent;
+  #  }
+
+  # Vqmod settings
+  # Add trailing slash to */vqmod/install requests.
+  rewrite /vqmod/install$ $scheme://$host$uri/ permanent;
+  
+  # Run index.php on /vqmod/install calls
+  location /vqmod/install/ {
+    index index.php;
+  }
+  
+  # Nginx configuration of vqmod htaccess
+  location /home/{{ item.user }}/public_html/vqmod/ {
+    location ~ \.(xml|cache) {
+      deny all;
+    }
+  }
+  # End Vqmod settings
+  
+  # SEO URL Settings
+  # Nginx configuration of OC htaccess
+  location = /sitemap.xml {
+    rewrite ^(.*)$ /index.php?route=feed/google_sitemap break; 
+  } 
+
+  location = /googlebase.xml {
+    rewrite ^(.*)$ /index.php?route=feed/google_base break; 
+  } 
+
+  location / {
+    # This try_files directive is used to enable SEO-friendly URLs for OpenCart
+    try_files $uri $uri/ @opencart;
+  }
+
+  location @opencart {
+    rewrite ^/(.+)$ /index.php?_route_=$1 last;
+  }
+  # End SEO settings
+
+  # Make sure files with the following extensions do not get loaded by nginx because nginx would display the source code, and these files can contain PASSWORDS!
+  location ~* \.(engine|inc|info|ini|install|log|make|module|profile|test|po|sh|.*sql|theme|tpl(\.php)?|xtmpl)$|^(\..*|Entries.*|Repository|Root|Tag|Template)$|\.php_ {
+    deny all;
+  }
+
+  # Do not log access to the favicon, to keep the logs cleaner
+  location = /favicon.ico {
+    log_not_found off;
+    access_log off;
+  }
+
+  location = /apple-touch-icon.png {
+    log_not_found off;
+    access_log off;
+  }
+
+  location = /apple-touch-icon-precomposed.png {
+    log_not_found off;
+    access_log off;
+  }
+
+  # Deny all attempts to access hidden files such as .htaccess, .htpasswd, .DS_Store (Mac).
+  # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban)
+  location ~ /\. {
+    access_log off;
+    log_not_found off;
+    deny all;
+  }
+
+  location ~ ~$ {
+    access_log off;
+    log_not_found off;
+    deny all;
+  }
+
+  # Deny access to any files with a .php extension in these directories
+  # Works in sub-directory installs and also in multisite network
+  # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban)
+  location ~* /(?:cache|logs|image|download)/.*\.php$ {
+    deny all;
+  }
+  
+  # Make sure these get through
+  location = /robots.txt {
+    allow all;
+    log_not_found off;
+    access_log off;
+  }
+  
+  # Fix for Firefox issue with cross site font icons
+  location ~* \.(eot|otf|ttf|woff)$ {
+    add_header Access-Control-Allow-Origin *;
+  }
+
+  # redirect server error pages to the static page /50x.html
+  error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+    root /usr/share/nginx/www;
+  }
+
+  # Pass all .php files onto a php-fpm/php-fcgi server.
+  location ~ [^/]\.php(/|$) {
+    # Regex to split $uri to $fastcgi_script_name and $fastcgi_path
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+
+    # Check that the PHP script exists before passing it
+    try_files $fastcgi_script_name =404;
+
+    # Bypass the fact that try_files resets $fastcgi_path_info
+    # see: http://trac.nginx.org/nginx/ticket/321
+    set $path_info $fastcgi_path_info;
+    fastcgi_param PATH_INFO $path_info;
+
+    fastcgi_pass unix:{{ socket_location }}/{{ item.domain }}.sock;
+    fastcgi_index index.php;
+    {% if item.ssl_enabled %}fastcgi_param HTTPS on;{% endif %}
+    include fastcgi_params;
+  }
+
+} # End of server block.

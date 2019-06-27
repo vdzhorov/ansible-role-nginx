@@ -1,0 +1,5 @@
+	# assets, media
+	location ~* \.{{ nginx_expires_types }}$ {
+	expires {{ nginx_expires_time }};
+	access_log off;
+}

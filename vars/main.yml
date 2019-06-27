@@ -1,0 +1,39 @@
+---
+
+websites:
+  - domain: 'example.com'
+    user: 'example' # The folder where your document root is. In this case it will be /home/example/public_html/
+    preset: 'default' # Can be either default, magento, opencart or wordpress. This signifies what preset configuration should be loaded for this website.
+    ssl_enabled: no
+    ssl_crt_path: '/etc/pki/tls/certs/example.com.combined'
+    ssl_key_path: '/etc/pki/tls/private/example.com.key'
+    gzip_enabled: yes
+    expires_enabled: yes
+    security_headers_enabled: yes
+  - domain: 'example2.com'
+    user: 'example' # The folder where your document root is. In this case it will be /home/example/public_html/
+    preset: 'magento' # Can be either default, magento, opencart or wordpress. This signifies what preset configuration should be loaded for this website.
+    ssl_enabled: yes
+    ssl_crt_path: '/etc/pki/tls/certs/example.com.combined'
+    ssl_key_path: '/etc/pki/tls/private/example.com.key'
+    gzip_enabled: yes
+    expires_enabled: yes
+    security_headers_enabled: yes
+  - domain: 'example3.com'
+    user: 'example' # The folder where your document root is. In this case it will be /home/example/public_html/
+    preset: 'opencart' # Can be either default, magento, opencart or wordpress. This signifies what preset configuration should be loaded for this website.
+    ssl_enabled: yes
+    ssl_crt_path: '/etc/pki/tls/certs/example.com.combined'
+    ssl_key_path: '/etc/pki/tls/private/example.com.key'
+    gzip_enabled: yes
+    expires_enabled: yes
+    security_headers_enabled: yes
+  - domain: 'example4.com'
+    user: 'example' # The folder where your document root is. In this case it will be /home/example/public_html/
+    preset: 'opencart' # Can be either default, magento, opencart or wordpress. This signifies what preset configuration should be loaded for this website.
+    ssl_enabled: yes
+    ssl_crt_path: '/etc/pki/tls/certs/example.com.combined'
+    ssl_key_path: '/etc/pki/tls/private/example.com.key'
+    gzip_enabled: yes
+    expires_enabled: yes
+    security_headers_enabled: yes

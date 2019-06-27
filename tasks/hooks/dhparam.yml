@@ -1,0 +1,11 @@
+---
+
+- name: Check if dhparam exists
+  stat:
+    path: "{{ dhparam_location }}"
+  register: dhparam
+
+- name: Generate dhapram file
+  command: 'openssl dhparam -out {{ dhparam_location }} 2048'
+  when: not dhparam.stat.exists
+  notify: 'Restart Nginx'
