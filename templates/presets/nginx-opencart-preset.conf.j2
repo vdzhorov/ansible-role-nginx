@@ -6,9 +6,11 @@
 }
 server {
 
-  listen 443;
+  listen 443 ssl;
   server_name www.{{ item.domain }};
   return 301 https://{{ item.domain }}$request_uri;
+  ssl_certificate {{ item.ssl_crt_path }};
+  ssl_certificate_key {{ item.ssl_key_path }};
 }
 {% endif %}
 server {
