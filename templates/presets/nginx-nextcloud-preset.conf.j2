@@ -10,14 +10,14 @@ upstream php-handler {
 }
 server {
 
-  listen 443;
+  listen 443 ssl;
   server_name www.{{ item.domain }};
   return 301 https://{{ item.domain }}$request_uri;
 }
 {% endif %}
 
 server {
-  {% if item.ssl_enabled %}listen 443;
+  {% if item.ssl_enabled %}listen 443 ssl;
   {% else %}listen 80;
   {% endif %}
 server_name {{ item.domain }};
