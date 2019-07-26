@@ -1,5 +1,5 @@
 upstream php-handler {
-    fastcgi_pass unix:{{ php_fpm_socket_location }}/{{ item.domain }}.sock;
+    server unix:{{ php_fpm_socket_location }}/{{ item.domain }}.sock;
 }
 
 {% if item.ssl_enabled %}server {
