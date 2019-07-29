@@ -31,7 +31,6 @@ server_name {{ item.domain }};
   {% endif %}
 {% if item.security_headers_enabled %}include includes/headers.conf;
   {% endif %}
-    server_name {{ item.domain }};
 
     {% if item.ssl_enabled %}# Use Mozilla's guidelines for SSL/TLS settings
     # https://mozilla.github.io/server-side-tls/ssl-config-generator/
