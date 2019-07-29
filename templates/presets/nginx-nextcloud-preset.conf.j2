@@ -19,18 +19,21 @@ server {
 {% endif %}
 
 server {
-  {% if item.ssl_enabled %}listen 443 ssl;
-  {% else %}listen 80;
-  {% endif %}
-server_name {{ item.domain }};
-{% if item.ssl_enabled %}include includes/ssl.conf;
-  {% endif %}
-{% if item.gzip_enabled %}include includes/gzip.conf;
-  {% endif %}
-{% if item.expires_enabled %}include includes/expires.conf;
-  {% endif %}
-{% if item.security_headers_enabled %}include includes/headers.conf;
-  {% endif %}
+    {% if item.ssl_enabled %}listen 443 ssl;
+    {% else %}listen 80;
+    {% endif %}
+    server_name {{ item.domain }};
+    {% if item.ssl_enabled %}include includes/ssl.conf;
+    {% endif %}
+    {% if item.gzip_enabled %}include includes/gzip.conf;
+    {% endif %}
+    {% if item.expires_enabled %}include includes/expires.conf;
+    {% endif %}
+    {% if item.security_headers_enabled %}include includes/headers.conf;
+    {% endif %}
+
+    error_log /var/log/nginx/{{ item.domain }}_error_log;
+    access_log /var/log/nginx/{{ item.domain }}_access_log;
 
     {% if item.ssl_enabled %}# Use Mozilla's guidelines for SSL/TLS settings
     # https://mozilla.github.io/server-side-tls/ssl-config-generator/
